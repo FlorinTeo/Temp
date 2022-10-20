@@ -14,8 +14,9 @@ public class OpNode extends RawNode {
     
     /**
      * Class fields:
-     * TODO: Operator code for this node
+     * Operator code for this node
      */
+    private OpCode _operator = OpCode.UNKNOWN;
     
     /**
      * Class constructor. Builds a new operator node.
@@ -23,8 +24,28 @@ public class OpNode extends RawNode {
      */
     protected OpNode(String rawContent) {
         super(rawContent);
-        // TODO: UNKNOWN initial value for this node's operator code
-        // TODO: since the raw content is not parsed.
+        // UNKNOWN initial value for this node's operator code
+        // since the raw content is not parsed.
+        switch(rawContent) {
+        case "^":
+            _operator = OpCode.POWER;
+            break;
+        case "*":
+            _operator = OpCode.MULTIPLICATION;
+            break;
+        case "/":
+            _operator = OpCode.DIVISION;
+            break;
+        case "%":
+            _operator = OpCode.MODULO;
+            break;
+        case "+":
+            _operator = OpCode.ADDITION;
+            break;
+        case "-":
+            _operator = OpCode.SUBTRACTION;
+            break;
+        }
     }
     
     /**
@@ -34,10 +55,15 @@ public class OpNode extends RawNode {
      * @return the new operator node.
      */
     public static OpNode createNode(String rawContent) {
-        // TODO: Tries to parse the raw content into a OpCode value
-        // TODO: if successful, creates an OpNode for it and save the operator code value within,
-        // TODO: otherwise returns null 
-        return null;
+        // Tries to parse the raw content into a OpCode value
+        // if successful, creates an OpNode for it and save the operator code value within,
+        // otherwise returns null 
+        String allOperators = "^*/%+-";
+        if (rawContent.length() != 1 || allOperators.indexOf(rawContent) == -1) {
+            return null;
+        }
+        
+        return new OpNode(rawContent);
     }
     
     /**
@@ -45,8 +71,8 @@ public class OpNode extends RawNode {
      * @return - the operator code.
      */
     public OpCode getOpCode() {
-        // TODO: returns the operator code (OpCode)
-        return null;
+        // returns the operator code (OpCode)
+        return _operator;
     }
     
     /**

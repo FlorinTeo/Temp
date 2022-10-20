@@ -4,9 +4,9 @@ public class NumNode extends RawNode {
     
     /**
      * Class fields:
-     * TODO: Numerical content (double) of this node
+     * Numerical content (double) of this node
      */
-    private double value;
+    private double _value;
 
     /**
      * Class constructor. Builds a new numerical node.
@@ -18,7 +18,7 @@ public class NumNode extends RawNode {
         // Constructor is protected, so an instance of this class
         // can be created only via the createNode method which verifies that
         // rawContent can be successfully parsed to a double.
-        value = Double.parseDouble(rawContent);
+        _value = Double.parseDouble(rawContent);
     }
     
     /**
@@ -28,9 +28,9 @@ public class NumNode extends RawNode {
      * @return the new numerical node.
      */
     public static NumNode createNode(String rawContent) {
-        // TODO: Tries to parse the raw content into a double value
-        // TODO: if successful, creates a NumNode for it and save the value within,
-        // TODO: otherwise returns null 
+        // Tries to parse the raw content into a double value
+        // if successful, creates a NumNode for it and save the value within,
+        // otherwise returns null 
         double value;
         try {
             value = Double.parseDouble(rawContent);
@@ -46,7 +46,7 @@ public class NumNode extends RawNode {
      * @return
      */
     public double getNumValue() {
-        // TODO: returns the numerical (double) content
-        return value;
+        // returns the numerical (double) content
+        return _value;
     }
 }
