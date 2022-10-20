@@ -31,9 +31,8 @@ public class NumNode extends RawNode {
         // Tries to parse the raw content into a double value
         // if successful, creates a NumNode for it and save the value within,
         // otherwise returns null 
-        double value;
         try {
-            value = Double.parseDouble(rawContent);
+            Double.parseDouble(rawContent);
         } catch (RuntimeException e) {
             return null;
         }
