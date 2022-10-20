@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import main.NumNode;
+
 class NumNode_tests {
 
     @Test
@@ -12,7 +14,14 @@ class NumNode_tests {
         // TODO: and verify they reflect their content correctly as a double value.
         // TODO: Try create a numerical node with an invalid string and
         // TODO: verify the result is a null reference.
-        fail("Test not implemented");
+        NumNode n = NumNode.createNode("123");
+        assertNotNull(n);
+        assertEquals(123.0, n.getNumValue());
+        n = NumNode.createNode("abc");
+        assertNull(n);
+        n = NumNode.createNode("-123.5");
+        assertNotNull(n);
+        assertEquals(-123.5, n.getNumValue());
     }
 
 }
