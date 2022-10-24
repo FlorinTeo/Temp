@@ -1,19 +1,28 @@
 package main;
 
+import main.OpNode.OpCode;
+
 public class NumCalc {
     
-    /**
-     * Class fields:
-     * TODO: Operators precedence table, as a double array of operator codes (OpNode.OpCode).
-     * TODO: Expression list: a double-linked list containing the numbers and operators to be evaluated.
-     * TODO: Tracing list: a double-linked list containing raw nodes, each holding a trace frame as a string. 
-     */
+    // Operators precedence table, as a double array of operator codes (OpNode.OpCode).
+    private OpNode.OpCode[][] _opPrecedence = {
+            {OpCode.POWER},
+            {OpCode.MULTIPLICATION, OpCode.DIVISION, OpCode.MODULO},
+            {OpCode.ADDITION, OpCode.SUBTRACTION},
+    };
+    
+    // Expression list: a double-linked list containing the numbers and operators to be evaluated.
+    private RawNode _exprList;
+    
+    // Tracing list: a double-linked list containing raw nodes, each holding a trace frame as a string.
+    private RawNode _tracesList;
     
     /**
      * Class constructor.
      */
     public NumCalc() {
-        // TODO: initialize the calculator
+        _exprList = null;
+        _tracesList = null;
     }
     
     /**
@@ -22,10 +31,27 @@ public class NumCalc {
      * @param exprStrings - components of the expression string 
      */
     private void buildExprList(String[] exprStrings) {
-        // TODO: For each string in the expression, try creating either
-        // TODO: a numeric node or an operator node.
-        // TODO: Whichever succeeds first, is added to the tail of the expression list.
-        // TODO: If neither nodes could be created, thrown a runtime exception.
+        // For each string in the expression...
+        for(String exprString : exprStrings) {
+            // ...try creating a numerical node or an operator node.
+            RawNode node = OpNode.createNode(exprString);
+            if (node == null) {
+                node = NumNode.createNode(exprString);
+            }
+            
+            // If neither were successful, the expression is invalid, token cannot be parsed
+            if (node == null) {
+                throw new RuntimeException("Unrecognized token '" + exprString + "'");
+            }
+            
+            // here we have a valid node. Add it to the list, either as the first
+            // node or at the tail of the list as we have it already.
+            if (_exprList == null) {
+                _exprList = node;
+            } else {
+                _exprList.addTail(node);
+            }
+        }
     }
     
     /**
@@ -50,10 +76,28 @@ public class NumCalc {
      * and adds it to the trace list.
      */
     private void addTraceFrame() {
-        // TODO: Builds a trace frame from the expression list:
-        // TODO: Goes through the expression list nodes and adds their raw content
-        // TODO: to a string accumulator, separated by one space character.
-        // TODO: The resulting string is added as a new raw node to the tail of the tracing list. 
+        // Builds a trace frame from the expression list:
+        String trace = "[";
+        
+        // Goes through the expression list nodes and adds their raw content
+        // to a string accumulator, separated by one space character.
+        RawNode crtNode = _exprList;
+        while(crtNode != null) {
+            trace += crtNode.getRawContent();
+            if (crtNode.getNext() != null) {
+                trace += " ";
+            }
+            crtNode = crtNode.getNext();
+        }
+        trace += "]";
+        
+        // The resulting string is added as a new raw node to the tail of the tracing list.
+        RawNode traceNode = new RawNode(trace);
+        if (_tracesList == null) {
+            _tracesList = traceNode;
+        } else {
+            _tracesList.addTail(traceNode);
+        }
     }
     
     /**
@@ -62,11 +106,18 @@ public class NumCalc {
      * @return - evaluation result.
      */
     public String evaluate(String expression) {
-        // TODO: Resets the expression list and the tracing list,
-        // TODO: Splits the expression string around the " " character, into its individual parts
-        // TODO: Builds the expression list,
-        // TODO: Evaluates the expression and returns the result of the evaluation.
-        return "";
+        // Resets the expression list and the tracing list,
+        _exprList = null;
+        _tracesList = null;
+        
+        // Splits the expression string around the " " character, into its individual parts
+        String[] exprParts = expression.split(" ");
+        
+        // Builds the expression list,
+        buildExprList(exprParts);
+        
+        // Evaluates the expression and returns the result of the evaluation.
+        return evalExprList();
     }
     
     /**
@@ -75,9 +126,16 @@ public class NumCalc {
      */
     @Override
     public String toString() {
-        // TODO: Goes through the tracing list nodes adding the node raw content to
-        // TODO: an accumulator string, separated by "\n" (each trace frame on a new line)
-        // TODO: then returns the accumulated result.
-        return "";
+        // Goes through the tracing list nodes adding the node raw content to
+        // an accumulator string, separated by "\n" (each trace frame on a new line)
+        String output = "";
+        RawNode crtTrace = _tracesList;
+        while(crtTrace != null) {
+            output += crtTrace.getRawContent() + "\n";
+            crtTrace = crtTrace.getNext();
+        }
+        
+        // in the end return the accumulated result.
+        return output;
     }
 }
