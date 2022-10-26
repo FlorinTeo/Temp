@@ -1,5 +1,7 @@
 package main;
 
+import java.util.Arrays;
+
 import main.OpNode.OpCode;
 
 public class NumCalc {
@@ -60,15 +62,50 @@ public class NumCalc {
      * @return - evaluation result.
      */
     private String evalExprList() {
-        // TODO: For each row of operators in the precedence table,
-        // TODO: Scan the expression lists and check each operator node.
-        // TODO: If the operator code is found in the row of operators,
-        // TODO: evaluate it, and replace the operator node and its operands
-        // TODO: with the node for the result. After each such reduction of the list
-        // TODO: add the entire expression list as a frame into the trace frames list.
-        // TODO: When all loops are done, expression list should contain only one numerical node,
-        // TODO: which is the final result. Method returns the numerical value, as a string.
-        return "";
+        // scan each row in the operators precedence table
+        for (OpNode.OpCode[] ops: _opPrecedence) {
+            // scan each node in the expression list
+            for(RawNode node = _exprList; node != null; node = node._next) {
+                // skip nodes which are not operators
+                if (!(node instanceof OpNode)) {
+                    continue;
+                }
+                
+                OpNode opNode = (OpNode)node;
+                
+                // skip operator nodes which are not in the current precedence row
+                if (!Arrays.asList(ops).contains(opNode.getOpCode())) {
+                    continue;
+                }
+                
+                // evaluate the operator
+                NumNode resultNode = opNode.evaluate();
+                
+                // since evaluation succeeded, it means operator
+                // has valid _prev and _next numerical operand nodes.
+                
+                // set the _prev, _next link of the new result node
+                resultNode._prev = opNode._prev._prev;
+                resultNode._next = opNode._next._next;
+                
+                // link the new result node into the list
+                if (resultNode._prev != null) {
+                    resultNode._prev._next = resultNode;
+                } else {
+                    _exprList = resultNode;
+                }
+                if (resultNode._next != null) {
+                    resultNode._next._prev = resultNode;
+                }
+                
+                // since an operator has just been evaluated and the
+                // expression list changed, add a trace frame.
+                addTraceFrame();
+            }
+        }
+        
+        // at this point the entire list should be reduced to one element only, which is the expression result.
+        return _exprList.getRawContent();
     }
     
     /**

@@ -7,9 +7,9 @@ public class RawNode {
      * Raw content in this node, as a string.
      * References to the previous and next node, or null respectively if nodes do not exist. 
      */
-    private String _data;
-    private RawNode _next;
-    private RawNode _prev;
+    protected String _data;
+    protected RawNode _next;
+    protected RawNode _prev;
     
     /**
      * Class constructor. Builds a new generic raw content node.

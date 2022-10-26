@@ -1,5 +1,7 @@
 package main;
 
+import java.text.DecimalFormat;
+
 public class OpNode extends RawNode {
     
     public enum OpCode {
@@ -81,11 +83,51 @@ public class OpNode extends RawNode {
      * @return the result as a new numerical node.
      */
     public NumNode evaluate() {
-        // TODO: precondition for evaluation is that this (operator) node is surrounded
-        // TODO: by numerical nodes. Check and throw runtime exceptions if these are not true.
-        // TODO: Otherwise get the two numerical (operand) nodes, execute the operator and
-        // TODO: return the result as a new numerical node.
-        return null;
+        // Precondition for evaluation is that this (operator) node is surrounded by two valid nodes.
+        if (_prev == null || _next == null) {
+            throw new RuntimeException("Missing operands for operator: " + _data);
+        }
+        
+        // The two nodes should be of NumNode type
+        if (!(_prev instanceof NumNode) || !(_next instanceof NumNode)) {
+            throw new RuntimeException("Wrong operands for operator: " + _data);
+        }
+        
+        // Now everything is verified. This operator has its operands so we can go ahead and evalute it.
+        NumNode num1 = (NumNode)_prev;
+        NumNode num2 = (NumNode)_next;
+        
+        double result;
+        switch(_operator) {
+        case POWER:
+            result = Math.pow(num1.getNumValue(), num2.getNumValue());
+            break;
+        case MULTIPLICATION:
+            result = num1.getNumValue() * num2.getNumValue();
+            break;
+        case DIVISION:
+            if (num2.getNumValue() == 0) {
+                throw new RuntimeException("Division by zero");
+            }
+            result = num1.getNumValue() / num2.getNumValue();
+            break;
+        case MODULO:
+            result = num1.getNumValue() % num2.getNumValue();
+            break;
+        case ADDITION:
+            result = num1.getNumValue() + num2.getNumValue();
+            break;
+        case SUBTRACTION:
+            result = num1.getNumValue() - num2.getNumValue();
+            break;
+        default:
+            throw new RuntimeException("Invalid operator node " + _operator);
+        }
+        
+        // We have the result as a double. We need to convert it to a nicely formatted string
+        // such that we can create a NumNode for it which is what we return.
+        DecimalFormat df = new DecimalFormat("#0.######");
+        String resultString = df.format(result);
+        return NumNode.createNode(resultString);
     }
-
 }
